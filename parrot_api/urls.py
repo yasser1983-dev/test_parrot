@@ -19,7 +19,10 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('user.urls')),
-    path('api/', include('sales.urls')),
-    path('django-rq/', include('django_rq.urls')),  # optional: Django RQ dashboard
+    path('api/', include([
+        path('user/', include('user.urls')),
+        path('orders/', include('sales.urls')),
+        path('reports/', include('reports.urls')),
+    ])),
+    path('django-rq/', include('django_rq.urls')),
 ]

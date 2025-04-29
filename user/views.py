@@ -1,11 +1,18 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
-from user.models import User
-from rest_framework.authtoken.models import Token  # O usa JWT si prefieres
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .services.user_service import UserService
+from sales.factories.order_factory import OrderFactory
+
 
 class EmailOnlyAuthView(APIView):
     """Email-only authentication (no password)"""
+
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        factory = OrderFactory()
+        self.user_service = UserService(factory.get_user_model(), factory.get_user_model(), factory.get_token_model())
 
     def post(self, request):
         email = request.data.get('email')
@@ -13,16 +20,9 @@ class EmailOnlyAuthView(APIView):
         if not email:
             return Response({'error': 'Se requiere un correo electrónico'}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            user = User.objects.get(email=email)
+        user = self.user_service.get_user_by_email(email)
+        token = self.user_service.get_token(user)
+        if token is None:
+            return Response({'error': 'Usuario inactivo'}, status=status.HTTP_403_FORBIDDEN)
 
-            if not user.is_active:
-                return Response({'error': 'Usuario inactivo'}, status=status.HTTP_403_FORBIDDEN)
-
-            # Create a token if it doesn't exist
-            token, created = Token.objects.get_or_create(user=user)
-
-            return Response({'token': token.key}, status=status.HTTP_200_OK)
-
-        except User.DoesNotExist:
-            return Response({'error': 'Correo no registrado'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'token': token.key}, status=status.HTTP_200_OK)

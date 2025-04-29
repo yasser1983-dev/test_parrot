@@ -1,5 +1,7 @@
 from rest_framework import serializers
+
 from .models import Dish, Order, OrderItem
+
 
 class DishSerializer(serializers.ModelSerializer):
     """Serializer for Dish model."""
@@ -23,25 +25,18 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['id', 'customer_name', 'total_price', 'waiter', 'created_at', 'items']
+        read_only_fields = ['waiter']
 
     def create(self, validated_data):
         """Override to handle creation of Order and OrderItems."""
+        request = self.context['request']
+        waiter = request.user
         items_data = validated_data.pop('items')
+        extra_data = {**validated_data}
 
-        order = Order(**validated_data)
+        factory = self.context.get('order_factory')
+        if factory is None:
+            raise ValueError("OrderFactory no fue inyectada en el contexto del serializer")
 
-        total_price = 0
-        for item_data in items_data:
-            dish = item_data['dish']
-            if item_data['quantity'] > 0:
-                total_price += item_data['quantity'] * dish.price
-
-        order.total_price = total_price
-        order.save()
-
-        for item_data in items_data:
-            dish = item_data['dish']
-            OrderItem.objects.create(order=order, dish=dish, quantity=item_data['quantity'])
-
-        return order
+        return factory.create_order(waiter, items_data, extra_data)
 

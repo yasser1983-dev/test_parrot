@@ -1,6 +1,7 @@
 asgiref==3.8.1
 click==8.1.8
 Django==5.2
+django-extensions==4.1
 django-filter==25.1
 django-redis==5.4.0
 django-rq==3.0.1
