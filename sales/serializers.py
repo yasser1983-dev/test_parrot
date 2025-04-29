@@ -9,7 +9,7 @@ class DishSerializer(serializers.ModelSerializer):
 
 class OrderItemSerializer(serializers.ModelSerializer):
     """Serializer for OrderItem model."""
-    dish = DishSerializer()  # Serialize the dish
+    dish = serializers.PrimaryKeyRelatedField(queryset=Dish.objects.all())
 
     class Meta:
         model = OrderItem
@@ -17,7 +17,8 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     """Serializer for Order model."""
-    items = OrderItemSerializer(many=True)  # Serialize multiple items for an order
+    items = OrderItemSerializer(many=True)
+    total_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)  # 🔥 Solo lectura
 
     class Meta:
         model = Order
@@ -25,18 +26,22 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Override to handle creation of Order and OrderItems."""
-        items_data = validated_data.pop('items')  # Extract items data from validated_data
-        order = Order.objects.create(**validated_data)  # Create the order
+        items_data = validated_data.pop('items')
 
-        # Create OrderItems and associate them with the created order
+        order = Order(**validated_data)
+
+        total_price = 0
         for item_data in items_data:
-            dish_data = item_data.pop('dish')
-            dish = Dish.objects.get(id=dish_data['id'])  # Retrieve the dish object
-            OrderItem.objects.create(order=order, dish=dish, **item_data)  # Create OrderItem
+            dish = item_data['dish']
+            if item_data['quantity'] > 0:
+                total_price += item_data['quantity'] * dish.price
 
-        # Calculate the total price of the order
-        total_price = sum(item_data['quantity'] * dish.price for item_data in items_data)
         order.total_price = total_price
-        order.save()  # Save the total price on the order
+        order.save()
+
+        for item_data in items_data:
+            dish = item_data['dish']
+            OrderItem.objects.create(order=order, dish=dish, quantity=item_data['quantity'])
 
         return order
+

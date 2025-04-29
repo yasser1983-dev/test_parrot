@@ -1,18 +1,17 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
 
+from .filters import OrderFilter
 from .models import Order
 from .serializers import OrderSerializer
-from .filters import OrderFilter
-from .tasks import log_order_creation
 
 
 class OrderViewSet(viewsets.ModelViewSet):
     """ViewSet for creating and listing orders."""
     serializer_class = OrderSerializer
-    #permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     queryset = Order.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_class = OrderFilter
@@ -22,7 +21,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         """Filter orders by logged-in waiter."""
         if not self.request.user.is_authenticated:
             return Order.objects.none()
-        return self.queryset.filter(waiter=self.request.user)
+        return self.queryset.all()
 
     @action(detail=False, methods=['get'])
     def daily_report(self, request):
