@@ -47,9 +47,9 @@ Asegúrate de tener instalados los siguientes programas:
 Este proyecto utiliza django-rq para ejecutar tareas en segundo plano mediante Redis.
 Para que las tareas asincrónicas funcionen correctamente (impresión en consola del registro de órdenes), 
 es necesario ejecutar un worker.
-    ```bash
-    python manage.py rqworker
-    ```
+```bash
+  python manage.py rqworker
+```
 
 ### Estructura del Proyecto
 ```bash
@@ -229,3 +229,36 @@ Ejecuta el siguiente comando para generar datos falsos:
 
 - **Dependency Injection (Inyección de Dependencias)**:
     Se utiliza en la clase OrderSerializer, donde se inyecta el OrderFactory para la creación de órdenes y en la clase, tambièn en UserService y DailySalesReportService
+
+- **Patrón de Asynchronous Processing (Procesamiento Asincrónico)**:
+
+  Se utiliza django-rq para manejar tareas en segundo plano, como la impresión de registros de órdenes. 
+  Esto permite que el servidor maneje múltiples tareas sin bloquear el hilo principal.
+  Este patrón se enfoca en procesar tareas largas o bloqueantes fuera del ciclo principal de la aplicación.
+
+- **Patrón de Message Queue (Cola de Mensajes)**
+    Utiliza Redis como backend para manejar tareas asincrónicas. 
+    Esto permite que las tareas se procesen en segundo plano y se manejen de manera eficiente.
+    Este patrón es útil para desacoplar componentes y mejorar la escalabilidad de la aplicación.
+- 
+- **Patrón de Decorador**:
+    Se utiliza para agregar funcionalidad adicional para crear la tarea asíncron con @django_rq.job.
+
+- **Patrón de Decoupling (Desacoplamiento)**
+    Se utiliza para separar la lógica de negocio de la lógica de presentación. 
+    Esto se logra mediante el uso de servicios y serializadores, lo que permite una mejor mantenibilidad y escalabilidad del código.
+     Usar Redis y tareas asincrónicas desacopla el procesamiento pesado o de larga duración de las vistas o controladores de Django.
+
+- **Patrón de Task Queue Worker (Trabajador de Cola de Tareas)**
+    Se utiliza django-rq para manejar tareas en segundo plano, como la impresión de registros de órdenes.
+
+- **Patrón de Event-Driven Architecture (Arquitectura Basada en Eventos)**
+   Se utiliza para manejar eventos como la creación de órdenes y la generación de reportes. 
+    Esto permite que la aplicación responda a eventos de manera eficiente y escalable.
+
+- **Patrón de Filtros**:
+    Se utiliza para filtrar las órdenes por fecha de creación y nombre del cliente en la vista de reportes.
+    Esto permite una búsqueda más eficiente y específica de los datos.
+
+
+
