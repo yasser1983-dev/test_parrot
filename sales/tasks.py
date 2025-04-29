@@ -8,6 +8,6 @@ def log_order_creation(order_id):
     """Background task to log the creation of a new order."""
     try:
         order = Order.objects.get(id=order_id)
-        print(f"Order created: {order.customer_name} ordered {order.quantity}x {order.item_name}")
+        print(f"Orden creada: {order.customer_name} con precio total {order.total_price} x mesero {order.waiter.email}")
     except Order.DoesNotExist:
         print("Order not found")

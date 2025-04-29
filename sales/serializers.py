@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from .tasks import log_order_creation
 from .models import Dish, Order, OrderItem
 
 
@@ -38,5 +38,9 @@ class OrderSerializer(serializers.ModelSerializer):
         if factory is None:
             raise ValueError("OrderFactory no fue inyectada en el contexto del serializer")
 
-        return factory.create_order(waiter, items_data, extra_data)
+        order = factory.create_order(waiter, items_data, extra_data)
+        # Calls the asynchronous task to record the creation of the order
+        log_order_creation.delay(order.id)
+
+        return order
 

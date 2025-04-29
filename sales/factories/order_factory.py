@@ -5,7 +5,23 @@ from user.models import User
 
 class OrderFactory:
 
-    def create_order(self, waiter, items_data, extra_order_data=None):
+    def create_order(self, waiter, items_data, extra_order_data=None)-> Order:
+        """
+        Creates a new Order instance along with its associated OrderItems.
+
+        Args:
+            waiter (User): The user (waiter) responsible for the order.
+            items_data (list): A list of dictionaries containing 'dish' and 'quantity' keys.
+                               Example: [{'dish': dish_instance, 'quantity': 2}, ...]
+            extra_order_data (dict, optional): Additional fields to be included in the Order creation.
+
+        Returns:
+            Order: The created Order object with its related OrderItems.
+
+        Note:
+            Only items with a quantity greater than 0 are processed and included.
+            The total price is calculated based on the price and quantity of valid dishes.
+        """
         total_price = 0
         valid_items = []
         if extra_order_data is None:

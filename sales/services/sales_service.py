@@ -1,4 +1,3 @@
-from django.db.models import Sum, F
 from ..models import Order, OrderItem
 
 class SalesService:

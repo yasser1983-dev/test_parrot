@@ -42,65 +42,71 @@ Asegúrate de tener instalados los siguientes programas:
        DB_PORT=5432
 5. **Crea las migraciones y aplica las migraciones**
 
+6. **Background Worker (django-rq)**
+
+Este proyecto utiliza django-rq para ejecutar tareas en segundo plano mediante Redis.
+Para que las tareas asincrónicas funcionen correctamente (impresión en consola del registro de órdenes), 
+es necesario ejecutar un worker.
+    ```bash
+    python manage.py rqworker
+    ```
+
 ### Estructura del Proyecto
 ```bash
 test_parrot/
 │
-├── parrot_api/                      # Configuración general del proyecto Django
-│   ├── __init__.py                   # Inicialización del proyecto
-│   ├── asgi.py                       # Configuración para ASGI (servidor asíncrono)
-│   ├── settings.py                   # Configuración principal del proyecto (bases de datos, apps, etc.)
-│   ├── urls.py                       # Rutas globales del proyecto
-│   ├── wsgi.py                       # Configuración para WSGI (servidor tradicional)
-│   ├── core/                         # Lógica común para el proyecto
-│   │   ├── __init__.py               # Inicialización del módulo
-│   │   ├── models.py                 # Modelos generales, si es necesario
-│   │   ├── serializers.py            # Serializadores comunes (autenticación, usuarios, etc.)
-│   │   ├── permissions.py            # Permisos y lógica compartida
-│   │   └── utils.py                  # Funciones auxiliares comunes
+├── manage.py                         # Script principal para tareas administrativas de Django
+├── requirements.txt                  # Lista de dependencias del proyecto
+├── .env                              # Variables de entorno para configuración local
+├── README.md                         # Documentación principal del proyecto
 │
-├── sales/                            # Aplicación encargada de gestionar ventas (platos, órdenes, etc.)
-│   ├── migrations/                   # Migraciones automáticas de base de datos para ventas
-│   ├── __init__.py                   # Inicialización del módulo
-│   ├── models.py                     # Modelos de base de datos para ventas
-│   ├── serializers.py                # Serializadores para los modelos de ventas
-│   ├── views.py                      # Vistas de la API para ventas
-│   ├── urls.py                       # Rutas específicas para el módulo de ventas
-│   ├── admin.py                      # Configuración de admin para ventas
-│   └── tests/                        # Pruebas unitarias del módulo de ventas
-│       ├── __init__.py               # Inicialización de pruebas
-│       ├── test_views.py             # Pruebas para vistas
-│       └── test_serializers.py       # Pruebas para serializadores
+├── parrot_api/                       # Configuración principal del proyecto Django
+│   ├── __init__.py
+│   ├── asgi.py                       # Configuración para servidores ASGI (asincrónicos)
+│   ├── settings.py                   # Configuración global (apps instaladas, bases de datos, etc.)
+│   ├── urls.py                       # Enrutamiento raíz del proyecto
+│   └── wsgi.py                       # Configuración para servidores WSGI (sincrónicos)
+│
+├── sales/                            # Aplicación encargada de la gestión de ventas
+│   ├── __init__.py
+│   ├── admin.py                      # Configuración del panel admin para ventas
+│   ├── models.py                     # Modelos de platos, órdenes, etc.
+│   ├── serializers.py                # Serializadores de ventas
+│   ├── views.py                      # Vistas de la API de ventas
+│   ├── urls.py                       # Rutas de ventas
+│   ├── tasks.py                      # Tareas asincrónicas relacionadas con ventas
+│   ├── migrations/                   # Archivos de migración
+│   ├── factories/                    # Fábricas de entidades de ventas
+│   │   ├── __init__.py
+│   │   └── order_factory.py
+│   └── services/                     # Lógica de negocio de ventas
+│       ├── __init__.py
+│       └── sales_services.py
 │
 ├── users/                            # Aplicación encargada de la gestión de usuarios
-│   ├── migrations/                   # Migraciones automáticas de base de datos para usuarios
-│   ├── __init__.py                   # Inicialización del módulo
-│   ├── models.py                     # Modelos de base de datos para usuarios
-│   ├── serializers.py                # Serializadores para el modelo de usuarios
-│   ├── views.py                      # Vistas de la API para usuarios
-│   ├── urls.py                       # Rutas específicas para el módulo de usuarios
-│   ├── admin.py                      # Configuración de admin para usuarios
-│   └── tests/                        # Pruebas unitarias del módulo de usuarios
-│       ├── __init__.py               # Inicialización de pruebas
-│       ├── test_views.py             # Pruebas para vistas de usuarios
-│       └── test_serializers.py       # Pruebas para serializadores de usuarios
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── models.py                     # Modelo de usuarios personalizado (si aplica)
+│   ├── serializers.py                # Serializadores de usuario
+│   ├── views.py                      # Vistas de usuario (registro, login, etc.)
+│   ├── urls.py                       # Rutas de usuarios
+│   ├── migrations/                   # Migraciones de usuarios
+│   └── services/                     # Lógica de negocio de usuarios
+│       ├── __init__.py
+│       └── user_services.py
 │
-├── sales_reports/                    # Aplicación encargada de los reportes de ventas
-│   ├── migrations/                   # Migraciones automáticas para los reportes
-│   ├── __init__.py                   # Inicialización del módulo
-│   ├── models.py                     # Modelos específicos para los reportes
-│   ├── serializers.py                # Serializadores para los reportes
-│   ├── views.py                      # Vistas para generar reportes
-│   ├── urls.py                       # Rutas específicas para el módulo de reportes
-│   └── tests/                        # Pruebas unitarias del módulo de reportes
-│       ├── __init__.py               # Inicialización de pruebas
-│       ├── test_views.py             # Pruebas para vistas de reportes
-│       └── test_serializers.py       # Pruebas para serializadores de reportes
-│
-├── manage.py                         # Script para administrar el proyecto (migraciones, servidor, etc.)
-├── requirements.txt                  # Listado de dependencias Python del proyecto
-├── .env                               # Variables de entorno para configuración segura
-└── README.md                         # Documentación principal del proyecto
+├── reports/                          # Aplicación para generar reportes (ventas, estadísticas, etc.)
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── filters.py                    # Filtros para búsquedas avanzadas
+│   ├── models.py                     # Modelos específicos de reportes
+│   ├── serializers.py                # Serializadores para reportes
+│   ├── views.py                      # Vistas para generación de reportes
+│   ├── urls.py                       # Rutas para reportes
+│   ├── migrations/                   # Migraciones de reportes
+│   └── services/                     # Lógica de negocio para reportes
+│       ├── __init__.py
+│       └── report_services.py
 
 ```
 
