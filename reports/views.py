@@ -1,4 +1,4 @@
-from django.utils.dateparse import parse_date
+from datetime import datetime, time, timedelta, timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions
 from rest_framework import status
@@ -36,8 +36,15 @@ class DailySalesReportView(GenericAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        start_date = parse_date(start_date_str)
-        end_date = parse_date(end_date_str)
+        start_date = datetime.combine(datetime.strptime(request.GET['start_date'], '%Y-%m-%d').date(),
+                                      time.min)  # 00:00:00
+        end_date = datetime.combine(datetime.strptime(request.GET['end_date'], '%Y-%m-%d').date(),
+                                    time.max)  # 23:59:59.999999
+
+        utc_minus_6 = timezone(timedelta(hours=-6))
+
+        start_datetime = datetime.combine(start_date, time.min).replace(tzinfo=utc_minus_6)
+        end_datetime = datetime.combine(end_date, time.max).replace(tzinfo=utc_minus_6)
 
         if not start_date or not end_date:
             return Response(
@@ -47,7 +54,7 @@ class DailySalesReportView(GenericAPIView):
 
         queryset = self.sales_service.get_order_dish()
 
-        report = self.daily_sales_report_service.get_grouped_report(queryset, start_date, end_date)
+        report = self.daily_sales_report_service.get_grouped_report(queryset, start_datetime, end_datetime)
 
         serializer = DailySalesReportSerializer(report, many=True)
 
