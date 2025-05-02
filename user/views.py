@@ -1,13 +1,13 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .services.user_service import UserService
-from sales.factories.order_factory import OrderFactory
+from sales.order_factory import OrderFactory
+
+from .user_service import UserService
 
 
 class EmailOnlyAuthView(APIView):
     """Email-only authentication (no password)"""
-
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

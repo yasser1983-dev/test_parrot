@@ -1,13 +1,16 @@
 from rest_framework import serializers
-from .tasks import log_order_creation
+
 from .models import Dish, Order, OrderItem
+from .tasks import log_order_creation
 
 
 class DishSerializer(serializers.ModelSerializer):
     """Serializer for Dish model."""
+
     class Meta:
         model = Dish
         fields = ['id', 'name', 'price']
+
 
 class OrderItemSerializer(serializers.ModelSerializer):
     """Serializer for OrderItem model."""
@@ -16,6 +19,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = ['id', 'dish', 'quantity']
+
 
 class OrderSerializer(serializers.ModelSerializer):
     """Serializer for Order model."""
@@ -43,4 +47,3 @@ class OrderSerializer(serializers.ModelSerializer):
         log_order_creation.delay(order.id)
 
         return order
-

@@ -4,12 +4,13 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+from sales.order_factory import OrderFactory
+from sales.sales_service import SalesService
 
 from .filters import OrderFilter
 from .serializers import DailySalesReportSerializer
 from .services.report_service import DailySalesReportService
-from sales.services.sales_service import SalesService
-from sales.factories.order_factory import OrderFactory
+
 
 class DailySalesReportView(GenericAPIView):
     """View to generate the sales report grouped by item."""
@@ -24,7 +25,6 @@ class DailySalesReportView(GenericAPIView):
         self.daily_sales_report_service = DailySalesReportService()
         self.sales_service = SalesService(factory.get_order_model(), factory.get_order_item_model())
         self.queryset = self.sales_service.get_all_order_item()
-
 
     def get(self, request, *args, **kwargs):
         start_date_str = request.query_params.get('start_date')

@@ -1,4 +1,5 @@
-from ..models import Order, OrderItem
+from .models import Order, OrderItem
+
 
 class SalesService:
     def __init__(self, order_model: Order, order_item_model: OrderItem):

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+
 class DailySalesReportSerializer(serializers.Serializer):
     name = serializers.CharField()
     total_quantity = serializers.IntegerField()

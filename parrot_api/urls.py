@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/', include([
         path('user/', include('user.urls')),
         path('orders/', include('sales.urls')),
+        path('dishes/', include('dishes.urls')),
         path('reports/', include('reports.urls')),
     ])),
     path('django-rq/', include('django_rq.urls')),

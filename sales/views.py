@@ -1,7 +1,7 @@
-from .services.sales_service import SalesService
 from rest_framework import viewsets, permissions
-from .factories.order_factory import OrderFactory
 
+from .order_factory import OrderFactory
+from .sales_service import SalesService
 from .serializers import OrderSerializer
 
 

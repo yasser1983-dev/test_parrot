@@ -5,7 +5,7 @@ from user.models import User
 
 class OrderFactory:
 
-    def create_order(self, waiter, items_data, extra_order_data=None)-> Order:
+    def create_order(self, waiter, items_data, extra_order_data=None) -> Order:
         """
         Creates a new Order instance along with its associated OrderItems.
 

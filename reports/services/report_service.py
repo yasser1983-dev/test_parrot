@@ -1,5 +1,6 @@
 from django.db.models import Sum, F
 
+
 class DailySalesReportService:
 
     def get_grouped_report(self, queryset, start_date, end_date):

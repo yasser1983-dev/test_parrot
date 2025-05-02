@@ -1,6 +1,7 @@
-from user.models import User
 from rest_framework.authtoken.models import Token
 from sales.models import Order
+from user.models import User
+
 
 class UserService:
     def __init__(self, user_model: User, order_model: Order, token_model: Token):
@@ -26,4 +27,3 @@ class UserService:
             return token
         except self.User.DoesNotExist:
             return None
-
