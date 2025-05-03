@@ -1,3 +1,5 @@
+from django_rq import get_queue
+from redis.exceptions import ConnectionError
 from rest_framework import serializers
 
 from .models import Dish, Order, OrderItem
@@ -43,7 +45,15 @@ class OrderSerializer(serializers.ModelSerializer):
             raise ValueError("OrderFactory no fue inyectada en el contexto del serializer")
 
         order = factory.create_order(waiter, items_data, extra_data)
-        # Calls the asynchronous task to record the creation of the order
-        log_order_creation.delay(order.id)
+
+        try:
+            # Calls the asynchronous task to record the creation of the order
+            queue = get_queue('default')
+            queue.enqueue(log_order_creation, order.id)
+
+        except ConnectionError:
+            log_order_creation(order.id)
+            print("El Redis no está conectado, se registró la creación de la orden de forma asíncrona.")
+
 
         return order
