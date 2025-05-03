@@ -1,7 +1,4 @@
 from django.db.models import Sum, F, FloatField
-from django.db.models.functions import Coalesce
-
-from sales.models import OrderItem
 
 
 class DailySalesReportService:
