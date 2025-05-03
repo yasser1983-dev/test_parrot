@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-rl^x!%f(!42%*=^318fjp*f2g_8c(%c21koq*pdcbm)*za$wdv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'backend-test-parrot.onrender.com',  # Dominio de Render
+    'localhost',  # Desarrollo local
+    '127.0.0.1',  # Desarrollo local
+]
 
 # Application definition
 
