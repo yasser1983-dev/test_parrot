@@ -47,17 +47,17 @@ class OrderSerializer(serializers.ModelSerializer):
 
         order = factory.create_order(waiter, items_data, extra_data)
 
-        if is_rq_worker_alive():
-            try:
-                # Calls the asynchronous task to record the creation of the order
-                queue = get_queue('default')
-                queue.enqueue(log_order_creation, order.id)
-
-            except ConnectionError:
-                log_order_creation(order.id)
-                print("El Redis no está conectado, se registró la creación de la orden de forma asíncrona.")
-        else:
-            print("Worker inactivo. Ejecutada tarea de forma síncrona.")
-            log_order_creation(order.id)
+        # if is_rq_worker_alive():
+        #     try:
+        #         # Calls the asynchronous task to record the creation of the order
+        #         queue = get_queue('default')
+        #         queue.enqueue(log_order_creation, order.id)
+        #
+        #     except ConnectionError:
+        #         log_order_creation(order.id)
+        #         print("El Redis no está conectado, se registró la creación de la orden de forma asíncrona.")
+        # else:
+        #     print("Worker inactivo. Ejecutada tarea de forma síncrona.")
+        #     log_order_creation(order.id)
 
         return order
