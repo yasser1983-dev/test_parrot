@@ -73,6 +73,7 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "https://parrot-test-yasser.netlify.app"
     # Puedes añadir más orígenes aquí si tu frontend se despliega en otra URL
 ]
 
